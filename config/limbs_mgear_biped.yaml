@@ -1,0 +1,30 @@
+# Limb description for IK/FK matching on an mGear biped built from the
+# default biped template (arm_2jnt_01 / leg_2jnt_01 components).
+# "chain" lists nodes that follow the limb in both modes; for mGear these are
+# the deform joints. blend_attr: 1 = IK, 0 = FK.
+limbs:
+  arm_L:
+    blend_attr: armUI_L0_ctl.arm_blend
+    chain: [arm_L0_0_jnt, arm_L0_1_jnt, arm_L0_2_jnt]
+    fk: [arm_L0_fk0_ctl, arm_L0_fk1_ctl, arm_L0_fk2_ctl]
+    ik: arm_L0_ik_ctl
+    pole: arm_L0_upv_ctl
+    aim_axis: x
+    up_axis: -z
+  arm_R:
+    blend_attr: armUI_R0_ctl.arm_blend
+    chain: [arm_R0_0_jnt, arm_R0_1_jnt, arm_R0_2_jnt]
+    fk: [arm_R0_fk0_ctl, arm_R0_fk1_ctl, arm_R0_fk2_ctl]
+    ik: arm_R0_ik_ctl
+    pole: arm_R0_upv_ctl
+    aim_axis: -x
+    up_axis: z
+  leg_L:
+    blend_attr: legUI_L0_ctl.leg_blend
+    chain: [leg_L0_0_jnt, leg_L0_1_jnt, leg_L0_2_jnt]
+    fk: [leg_L0_fk0_ctl, leg_L0_fk1_ctl, leg_L0_fk2_ctl]
+    ik: leg_L0_ik_ctl
+    pole: leg_L0_upv_ctl
+    aim_axis: x
+    up_axis: -z
+    match_ik_rotation: false

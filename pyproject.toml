@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rig_kit"
+version = "1.0.0"
+description = "Maya rigging toolkit: proxy segmentation, IK/FK matching, rig validation, mGear wheel component."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Arsam Ali" }]
+requires-python = ">=3.7"
+dependencies = ["PyYAML"]
+
+[project.optional-dependencies]
+test = ["pytest", "numpy"]
+
+[project.scripts]
+rig-kit = "rig_kit.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.pytest.ini_options]
+pythonpath = ["python"]
+testpaths = ["python/rig_kit/test"]

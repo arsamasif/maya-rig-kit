@@ -1,0 +1,25 @@
+{
+  "name": "hero_rig",
+  "controls": [
+    {"name": "arm_L0_fk0_ctl",
+     "values": {"tx": 0, "ty": 0, "tz": 0, "rx": 0, "ry": 12.5, "rz": 0, "sx": 1, "sy": 1, "sz": 1, "v": 1},
+     "locked": ["v", "sx", "sy", "sz"], "keyable": ["rx", "ry", "rz"]},
+    {"name": "arm_L0_ik_ctl",
+     "values": {"tx": 0, "ty": 0, "tz": 0, "rx": 0, "ry": 0, "rz": 0, "sx": 1, "sy": 1, "sz": 1, "v": 1},
+     "locked": [], "keyable": ["tx", "ty", "tz", "rx", "ry", "rz", "v"]},
+    {"name": "spineCtrl",
+     "values": {"tx": 0, "ty": 0, "tz": 0, "rx": 0, "ry": 0, "rz": 0, "sx": 1, "sy": 1, "sz": 1, "v": 1},
+     "locked": ["v"], "keyable": ["rx", "ry", "rz"]}
+  ],
+  "joints": [
+    {"name": "arm_L0_0_jnt", "deform": true},
+    {"name": "arm_L0_1_jnt", "deform": true},
+    {"name": "arm_L0_end_jnt", "deform": true},
+    {"name": "arm_L0_twist_jnt", "deform": true}
+  ],
+  "skin_clusters": [
+    {"name": "body_skinCluster", "geometry": "body_geoShape",
+     "influences": ["arm_L0_0_jnt", "arm_L0_1_jnt"],
+     "max_influences_found": 6, "max_influences_setting": 4}
+  ]
+}

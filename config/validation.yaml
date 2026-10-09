@@ -1,0 +1,4 @@
+# Overrides for rig_kit.validate.DEFAULT_SETTINGS.
+max_influences: 4
+require_locked: [v, sx, sy, sz]
+ignore_joints: ["_end_jnt$", "^root_jnt$"]
