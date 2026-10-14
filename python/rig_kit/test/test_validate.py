@@ -106,6 +106,11 @@ def test_errors_sort_before_warnings():
 @pytest.mark.parametrize("kwargs, message", [
     ({"rules": ["nope"]}, "Unknown rules"),
     ({"settings": {"bogus": 1}}, "Unknown validation settings"),
+    ({"settings": {"max_influences": "4"}}, "'max_influences' has the wrong type"),
+    ({"settings": {"require_locked": "v"}}, "'require_locked' has the wrong type"),
+    ({"settings": {"rest_values": {"sx": "1"}}}, "'rest_values' has the wrong type"),
+    ({"settings": {"control_pattern": "[ctl"}}, "'control_pattern': bad pattern"),
+    ({"settings": {"ignore_joints": ["(end"]}}, "'ignore_joints': bad pattern"),
 ])
 def test_run_rejects_bad_arguments(kwargs, message):
     with pytest.raises(ValueError, match=message):

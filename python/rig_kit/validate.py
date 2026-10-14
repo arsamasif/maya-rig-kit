@@ -72,7 +72,8 @@ def merged_settings(overrides=None):
         dict: Complete settings.
 
     Raises:
-        ValueError: If ``overrides`` contains unknown keys.
+        ValueError: If ``overrides`` contains unknown keys, a value of the
+            wrong type or a pattern that is not a valid regular expression.
 
     """
     settings = dict(DEFAULT_SETTINGS)
@@ -80,8 +81,39 @@ def merged_settings(overrides=None):
     unknown = sorted(set(overrides) - set(DEFAULT_SETTINGS))
     if unknown:
         raise ValueError("Unknown validation settings: {0}".format(", ".join(unknown)))
+    for key, value in overrides.items():
+        _check_setting(key, value)
     settings.update(overrides)
     return settings
+
+
+def _check_setting(key, value):
+    """Raise ValueError if an override does not fit the default's shape."""
+    default = DEFAULT_SETTINGS[key]
+    if isinstance(default, (int, float)):
+        ok = _is_number(value)
+    elif key == "rest_values":
+        ok = isinstance(value, dict) and all(_is_number(v) for v in value.values())
+    elif isinstance(default, list):
+        ok = isinstance(value, list) and all(isinstance(v, str) for v in value)
+    else:
+        ok = isinstance(value, str)
+    if not ok:
+        raise ValueError("Validation setting '{0}' has the wrong type: {1!r}".format(key, value))
+
+    patterns = {"control_pattern": [value], "joint_pattern": [value], "ignore_joints": value}
+    for pattern in patterns.get(key, []):
+        try:
+            re.compile(pattern)
+        except re.error as error:
+            raise ValueError(
+                "Validation setting '{0}': bad pattern {1!r} ({2})".format(key, pattern, error)
+            ) from error
+
+
+def _is_number(value):
+    """Return True for ints and floats, but not bools."""
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
 def check_control_values(rig, settings):
