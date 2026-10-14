@@ -46,6 +46,8 @@ use the Rez package.
 
 IK/FK uses `config/limbs_mgear_biped.yaml` (the default mGear biped). For a
 different rig, write your own config and point `RIG_KIT_LIMB_CONFIG` at it.
+Check uses the built-in defaults unless `RIG_KIT_VALIDATION_CONFIG` points at
+a settings file such as `config/validation.yaml`.
 
 ## Scripting
 

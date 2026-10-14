@@ -20,6 +20,7 @@ from rig_kit import report
 from rig_kit import validate
 
 CONFIG_ENV = "RIG_KIT_LIMB_CONFIG"
+VALIDATION_ENV = "RIG_KIT_VALIDATION_CONFIG"
 DEFAULT_CONFIG = os.path.normpath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, "config", "limbs_mgear_biped.yaml")
 )
@@ -107,6 +108,35 @@ def switch_selected_limbs(config_path=None, key=False):
     return switched
 
 
+def validation_settings():
+    """Load the validation overrides the Check button uses.
+
+    Returns:
+        dict: Overrides from the YAML file in ``$RIG_KIT_VALIDATION_CONFIG``,
+        or None when the variable is not set.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If the file is not valid YAML or not a mapping.
+
+    """
+    path = os.environ.get(VALIDATION_ENV)
+    if not path:
+        return None
+    if not os.path.isfile(path):
+        raise FileNotFoundError("Missing validation config: {0}".format(path))
+    import yaml
+
+    with open(path, "r", encoding="utf-8") as handle:
+        try:
+            data = yaml.safe_load(handle) or {}
+        except yaml.YAMLError as error:
+            raise ValueError("Invalid YAML in {0}: {1}".format(path, error)) from error
+    if not isinstance(data, dict):
+        raise ValueError("Validation config must be a mapping: {0}".format(path))
+    return data
+
+
 def check_scene(settings=None):
     """Validate the rig in the open scene and show the report.
 
@@ -114,12 +144,23 @@ def check_scene(settings=None):
     summary when Maya runs with a UI.
 
     Args:
-        settings (dict): Validation setting overrides, or None.
+        settings (dict): Validation setting overrides; defaults to
+            ``validation_settings()``.
 
     Returns:
         list: :class:`rig_kit.validate.Issue` objects.
 
     """
+    try:
+        if settings is None:
+            settings = validation_settings()
+        validate.merged_settings(settings)
+    except ImportError:
+        _error("PyYAML is missing; drag install_rig_kit.py into Maya again to install it.")
+        return []
+    except (OSError, ValueError) as error:
+        _error(str(error))
+        return []
     rig = maya_export.export_rig()
     issues = validate.run(rig, settings)
     print(report.to_markdown(rig["name"], issues))

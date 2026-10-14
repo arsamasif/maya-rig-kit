@@ -111,6 +111,25 @@ def test_check_button_returns_issues(skinned_cylinder):
     assert isinstance(issues, list)
 
 
+def test_check_button_reads_validation_config(skinned_cylinder, tmp_path, monkeypatch):
+    config = tmp_path / "validation.yaml"
+    config.write_text("joint_pattern: '^limb_\\d_jnt$'\n")
+    assert any(issue.rule == "naming" for issue in maya_shelf.check_scene())
+    monkeypatch.setenv(maya_shelf.VALIDATION_ENV, str(config))
+    assert not any(issue.rule == "naming" for issue in maya_shelf.check_scene())
+
+
+@pytest.mark.parametrize("text", [None, "max_influences: [4\n", "max_influences: four\n"])
+def test_check_button_reports_a_bad_validation_config(
+    skinned_cylinder, tmp_path, monkeypatch, text
+):
+    config = tmp_path / "validation.yaml"
+    if text is not None:
+        config.write_text(text)
+    monkeypatch.setenv(maya_shelf.VALIDATION_ENV, str(config))
+    assert maya_shelf.check_scene() == []
+
+
 def test_drop_installer_writes_the_module_file(tmp_path, monkeypatch):
     modules = str(tmp_path / "modules")
     monkeypatch.setattr(install, "user_modules_dir", lambda: modules)
