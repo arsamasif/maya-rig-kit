@@ -79,11 +79,16 @@ def to_markdown(rig_name, issues):
     ])
     for issue in issues:
         lines.append("| {0} | {1} | `{2}` | {3} |".format(
-            issue.severity, issue.rule, issue.node, _escape(issue.message)
+            issue.severity, issue.rule, _escape(issue.node), _escape(issue.message)
         ))
     return "\n".join(lines) + "\n"
 
 
 def _escape(text):
-    """Escape pipe characters so they do not break the Markdown table."""
+    """Escape pipe characters so they do not break the Markdown table.
+
+    Node names need it too: DAG paths like ``grp|arm_ctl`` contain pipes, and
+    a code span does not protect them inside a table cell.
+
+    """
     return text.replace("|", "\\|")

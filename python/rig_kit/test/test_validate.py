@@ -119,6 +119,12 @@ def test_markdown_report_lists_issues_and_escapes_pipes():
     assert "a\\|b" in text
 
 
+def test_markdown_report_escapes_dag_paths_in_node_column():
+    issues = [validate.Issue("naming", validate.WARNING, "grp|spineCtrl", "bad")]
+    row = report.to_markdown("hero", issues).splitlines()[-1]
+    assert row == "| warning | naming | `grp\\|spineCtrl` | bad |"
+
+
 def test_markdown_report_for_clean_rig():
     assert "No issues found." in report.to_markdown("hero", [])
 
