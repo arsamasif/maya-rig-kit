@@ -157,6 +157,17 @@ def test_cli_settings_file(tmp_path):
     assert code == 0
 
 
+@pytest.mark.parametrize("text, message", [
+    ("max_influences: [8\n", "Invalid YAML"),
+    ("- max_influences: 8\n", "must be a mapping"),
+])
+def test_cli_bad_settings_file_returns_2(tmp_path, capsys, text, message):
+    settings = tmp_path / "settings.yaml"
+    settings.write_text(text)
+    assert cli.main(["validate", EXAMPLE, "--settings", str(settings)]) == 2
+    assert message in capsys.readouterr().err
+
+
 def test_cli_missing_file_returns_2(capsys):
     assert cli.main(["validate", "/nope/rig.json"]) == 2
     assert "Missing file" in capsys.readouterr().err

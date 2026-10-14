@@ -71,13 +71,24 @@ def _read_json(path):
 
 
 def _read_settings(path):
-    """Load validation setting overrides from YAML, or None."""
+    """Load validation setting overrides from YAML, or None.
+
+    Raises ValueError when the file is not valid YAML or not a mapping, so
+    the CLI reports it instead of printing a traceback.
+
+    """
     if not path:
         return None
     if not os.path.isfile(path):
         raise FileNotFoundError("Missing settings file: {0}".format(path))
     with open(path, "r", encoding="utf-8") as handle:
-        return yaml.safe_load(handle) or {}
+        try:
+            data = yaml.safe_load(handle) or {}
+        except yaml.YAMLError as error:
+            raise ValueError("Invalid YAML in {0}: {1}".format(path, error)) from error
+    if not isinstance(data, dict):
+        raise ValueError("Settings file must be a mapping: {0}".format(path))
+    return data
 
 
 def _run_validate(args):
