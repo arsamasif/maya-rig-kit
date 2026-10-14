@@ -77,6 +77,15 @@ def test_naming_checks_controls_and_joints():
     assert sorted(issue.node for issue in issues) == ["joint1", "spineCtrl"]
 
 
+def test_naming_ignores_namespace_and_dag_path():
+    rig = {
+        "controls": [_control("hero:arm_L0_fk0_ctl"), _control("grp|hero:spineCtrl")],
+        "joints": [{"name": "rig|hero:arm_L0_0_jnt"}],
+    }
+    issues = validate.run(rig, rules=["naming"])
+    assert [issue.node for issue in issues] == ["grp|hero:spineCtrl"]
+
+
 def test_unique_names_uses_short_names():
     rig = {"controls": [_control("grp|a_L0_ctl"), _control("other|a_L0_ctl")]}
     issues = validate.run(rig, rules=["unique_names"])

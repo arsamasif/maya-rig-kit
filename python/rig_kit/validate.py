@@ -199,6 +199,10 @@ def check_max_influences(rig, settings):
 def check_naming(rig, settings):
     """Flag controls and joints that break the naming convention.
 
+    The pattern is matched against the bare name, without DAG path or
+    namespace, so referenced rigs (``hero:arm_L0_fk0_ctl``) and non-unique
+    names exported as paths (``grp|arm_L0_fk0_ctl``) are judged like the rest.
+
     Args:
         rig (dict): Rig description.
         settings (dict): Validation settings.
@@ -215,7 +219,8 @@ def check_naming(rig, settings):
     for key, pattern in groups:
         regex = re.compile(pattern)
         for item in rig.get(key, []):
-            if not regex.match(item["name"]):
+            bare = item["name"].rsplit("|", 1)[-1].rpartition(":")[2]
+            if not regex.match(bare):
                 issues.append(Issue(
                     "naming", WARNING, item["name"],
                     "Name does not match {0} pattern {1}".format(key, pattern),
